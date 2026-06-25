@@ -3,16 +3,15 @@ import { Link, useLocation } from "react-router";
 import { Settings, Menu, X } from "lucide-react";
 import { StarIcon } from "./icons/StarIcon";
 
-const navLinks = [
+const links = [
   { path: "/", label: "Home" },
   { path: "/calendar", label: "Calendar" },
 ];
 
 export default function Navbar() {
   const location = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const isActive = (path: string) => location.pathname === path;
+  const [open, setOpen] = useState(false);
+  const active = (p: string) => location.pathname === p;
 
   return (
     <>
@@ -21,46 +20,35 @@ export default function Navbar() {
         style={{
           background: "rgba(10, 14, 39, 0.8)",
           backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
           borderBottom: "1px solid var(--border-subtle)",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-          {/* Logo */}
           <Link
             to="/"
             className="flex items-center gap-2 text-lg font-semibold"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              color: "var(--text-primary)",
-            }}
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--text-primary)" }}
           >
             <StarIcon size={18} />
             <span>CP Calendar</span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+            {links.map((l) => (
               <Link
-                key={link.path}
-                to={link.path}
+                key={l.path}
+                to={l.path}
                 className="relative py-1 transition-colors duration-200"
                 style={{
-                  color: isActive(link.path)
-                    ? "var(--amber-gold)"
-                    : "var(--text-secondary)",
-                  borderBottom: isActive(link.path)
-                    ? "2px solid var(--amber-gold)"
-                    : "2px solid transparent",
+                  color: active(l.path) ? "var(--amber-gold)" : "var(--text-secondary)",
+                  borderBottom: active(l.path) ? "2px solid var(--amber-gold)" : "2px solid transparent",
                 }}
               >
-                {link.label}
+                {l.label}
               </Link>
             ))}
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-4">
             <Link
               to="/settings"
@@ -69,55 +57,36 @@ export default function Navbar() {
             >
               <Settings size={20} />
             </Link>
-
-            {/* Mobile hamburger */}
             <button
               className="md:hidden p-2"
-              onClick={() => setMobileOpen(!mobileOpen)}
+              onClick={() => setOpen(!open)}
               style={{ color: "var(--text-secondary)" }}
             >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              {open ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile overlay */}
-      {mobileOpen && (
+      {open && (
         <div
           className="fixed inset-0 z-40 md:hidden flex flex-col items-center justify-center gap-8"
-          style={{
-            background: "rgba(5, 7, 20, 0.95)",
-            backdropFilter: "blur(20px)",
-          }}
+          style={{ background: "rgba(5, 7, 20, 0.95)", backdropFilter: "blur(20px)" }}
         >
-          {navLinks.map((link) => (
+          {[...links, { path: "/settings", label: "Settings" }].map((l) => (
             <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setMobileOpen(false)}
-              className="text-2xl font-semibold transition-colors"
+              key={l.path}
+              to={l.path}
+              onClick={() => setOpen(false)}
+              className="text-2xl font-semibold"
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                color: isActive(link.path)
-                  ? "var(--amber-gold)"
-                  : "var(--text-primary)",
+                color: active(l.path) ? "var(--amber-gold)" : "var(--text-primary)",
               }}
             >
-              {link.label}
+              {l.label}
             </Link>
           ))}
-          <Link
-            to="/settings"
-            onClick={() => setMobileOpen(false)}
-            className="text-2xl font-semibold transition-colors"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              color: "var(--text-primary)",
-            }}
-          >
-            Settings
-          </Link>
         </div>
       )}
     </>

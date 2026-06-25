@@ -4,29 +4,27 @@ import type { Contest } from "@/types";
 import { PLATFORMS } from "@/types";
 import { getPlatformIcon } from "./icons/PlatformIcons";
 
-interface ContestCardProps {
+interface Props {
   contest: Contest;
   index?: number;
 }
 
-export default function ContestCard({ contest, index = 0 }: ContestCardProps) {
+export default function ContestCard({ contest, index = 0 }: Props) {
   const platform = PLATFORMS.find((p) => p.id === contest.platform);
   const PlatformIcon = getPlatformIcon(contest.platform);
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("zh-CN", {
+  const fmtDate = (d: Date) =>
+    new Date(d).toLocaleDateString("zh-CN", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    if (mins === 0) return `${hours}h`;
-    return `${hours}h ${mins}m`;
+  const fmtDuration = (s: number) => {
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    return m === 0 ? `${h}h` : `${h}h ${m}m`;
   };
 
   return (
@@ -37,13 +35,11 @@ export default function ContestCard({ contest, index = 0 }: ContestCardProps) {
       whileHover={{ y: -4 }}
       className="rounded-xl p-5 transition-all duration-300"
       style={{
-        background:
-          "linear-gradient(135deg, rgba(17, 24, 66, 0.9) 0%, rgba(10, 14, 39, 0.95) 100%)",
+        background: "linear-gradient(135deg, rgba(17,24,66,0.9) 0%, rgba(10,14,39,0.95) 100%)",
         border: `1px solid ${platform?.bgColor || "var(--border-subtle)"}`,
-        boxShadow: "0 4px 24px rgba(0, 0, 0, 0.3)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
       }}
     >
-      {/* Top row: badge + date */}
       <div className="flex items-center gap-3 mb-3">
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold"
@@ -56,37 +52,26 @@ export default function ContestCard({ contest, index = 0 }: ContestCardProps) {
           <PlatformIcon size={14} />
           {platform?.name || contest.platform}
         </span>
-        <span
-          className="text-xs flex items-center gap-1"
-          style={{ color: "var(--text-secondary)" }}
-        >
+        <span className="text-xs flex items-center gap-1" style={{ color: "var(--text-secondary)" }}>
           <Calendar size={12} />
-          {formatDate(contest.startTime)}
+          {fmtDate(contest.startTime)}
         </span>
       </div>
 
-      {/* Contest name */}
-      <h3
-        className="text-base font-semibold mb-3 line-clamp-2"
-        style={{ color: "var(--text-primary)" }}
-      >
+      <h3 className="text-base font-semibold mb-3 line-clamp-2" style={{ color: "var(--text-primary)" }}>
         {contest.name}
       </h3>
 
-      {/* Bottom: duration + link */}
       <div className="flex items-center justify-between">
-        <span
-          className="text-xs flex items-center gap-1"
-          style={{ color: "var(--text-tertiary)" }}
-        >
+        <span className="text-xs flex items-center gap-1" style={{ color: "var(--text-tertiary)" }}>
           <Clock size={12} />
-          {formatDuration(contest.duration)}
+          {fmtDuration(contest.duration)}
         </span>
         <a
           href={contest.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs flex items-center gap-1 transition-colors duration-200 hover:underline"
+          className="text-xs flex items-center gap-1 transition-colors hover:underline"
           style={{ color: "var(--amber-gold)" }}
         >
           Go to Contest

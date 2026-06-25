@@ -2,8 +2,8 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
+  useEffect,
   type ReactNode,
 } from "react";
 import { trpc } from "@/providers/trpc";
@@ -28,9 +28,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     () => {
       if (typeof window !== "undefined") {
         const saved = localStorage.getItem("selectedPlatforms");
-        if (saved) {
-          return new Set(JSON.parse(saved) as Platform[]);
-        }
+        if (saved) return new Set(JSON.parse(saved) as Platform[]);
       }
       return new Set<Platform>([
         "codeforces",
@@ -44,7 +42,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [timezone, setTimezoneState] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("timezone") || Intl.DateTimeFormat().resolvedOptions().timeZone;
+      return (
+        localStorage.getItem("timezone") ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      );
     }
     return "UTC";
   });
@@ -52,9 +53,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const utils = trpc.useUtils();
   const { data: contests = [], isLoading } = trpc.contest.list.useQuery();
   const refreshMutation = trpc.contest.refresh.useMutation({
-    onSuccess: () => {
-      utils.contest.list.invalidate();
-    },
+    onSuccess: () => utils.contest.list.invalidate(),
   });
 
   const filteredContests = contests.filter((c) =>
@@ -64,15 +63,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const togglePlatform = useCallback((platform: Platform) => {
     setSelectedPlatforms((prev) => {
       const next = new Set(prev);
-      if (next.has(platform)) {
-        next.delete(platform);
-      } else {
-        next.add(platform);
-      }
-      localStorage.setItem(
-        "selectedPlatforms",
-        JSON.stringify(Array.from(next))
-      );
+      if (next.has(platform)) next.delete(platform);
+      else next.add(platform);
+      localStorage.setItem("selectedPlatforms", JSON.stringify([...next]));
       return next;
     });
   }, []);
@@ -86,13 +79,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     refreshMutation.mutate();
   }, [refreshMutation]);
 
-  // Auto-refresh on mount
   useEffect(() => {
     refreshMutation.mutate();
-    // Refresh every 5 minutes
-    const interval = setInterval(() => {
-      refreshMutation.mutate();
-    }, 5 * 60 * 1000);
+    const interval = setInterval(() => refreshMutation.mutate(), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -116,9 +105,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 }
 
 export function useApp() {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useApp must be used within AppProvider");
-  }
-  return context;
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useApp must be used within AppProvider");
+  return ctx;
 }
