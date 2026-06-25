@@ -3,12 +3,11 @@ import { ScrapedContest } from "./types";
 
 export async function fetchAtCoderContests(): Promise<ScrapedContest[]> {
   try {
-    const response = await fetch("https://atcoder.jp/contests/", {
+    const res = await fetch("https://atcoder.jp/contests/", {
       headers: { "User-Agent": "CP-Calendar/1.0" },
     });
-    const html = await response.text();
+    const html = await res.text();
     const $ = cheerio.load(html);
-
     const contests: ScrapedContest[] = [];
 
     $("#contest-table-upcoming tbody tr").each((_, row) => {
@@ -39,8 +38,8 @@ export async function fetchAtCoderContests(): Promise<ScrapedContest[]> {
     });
 
     return contests;
-  } catch (error) {
-    console.error("AtCoder scraper error:", error);
+  } catch (err) {
+    console.error("AtCoder scraper error:", err);
     return [];
   }
 }

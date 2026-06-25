@@ -1,6 +1,6 @@
 import { ScrapedContest } from "./types";
 
-const LEETCODE_GRAPHQL = `
+const QUERY = `
   query topTwoContests {
     topTwoContests {
       title
@@ -13,17 +13,16 @@ const LEETCODE_GRAPHQL = `
 
 export async function fetchLeetCodeContests(): Promise<ScrapedContest[]> {
   try {
-    const response = await fetch("https://leetcode.com/graphql", {
+    const res = await fetch("https://leetcode.com/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Referer: "https://leetcode.com/contest/",
         "User-Agent": "CP-Calendar/1.0",
       },
-      body: JSON.stringify({ query: LEETCODE_GRAPHQL }),
+      body: JSON.stringify({ query: QUERY }),
     });
-    const data = await response.json();
-
+    const data = await res.json();
     if (!data.data?.topTwoContests) return [];
 
     return data.data.topTwoContests.map(
@@ -37,8 +36,8 @@ export async function fetchLeetCodeContests(): Promise<ScrapedContest[]> {
         duration: c.duration,
       })
     );
-  } catch (error) {
-    console.error("LeetCode scraper error:", error);
+  } catch (err) {
+    console.error("LeetCode scraper error:", err);
     return [];
   }
 }

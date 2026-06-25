@@ -3,18 +3,13 @@ import { ScrapedContest } from "./types";
 
 export async function fetchNowCoderContests(): Promise<ScrapedContest[]> {
   try {
-    const response = await fetch(
-      "https://ac.nowcoder.com/acm/contest/vip-index",
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        },
-      }
-    );
-    const html = await response.text();
+    const res = await fetch("https://ac.nowcoder.com/acm/contest/vip-index", {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      },
+    });
+    const html = await res.text();
     const $ = cheerio.load(html);
-
     const contests: ScrapedContest[] = [];
 
     $(".platform-item.js-item").each((_, el) => {
@@ -23,12 +18,9 @@ export async function fetchNowCoderContests(): Promise<ScrapedContest[]> {
       const href = nameEl.attr("href") || "";
       const timeEl = $(el).find(".platform-item__time");
       const timeText = timeEl.text().trim();
-
       if (!name || !timeText) return;
 
-      const timeMatch = timeText.match(
-        /(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/
-      );
+      const timeMatch = timeText.match(/(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/);
       if (!timeMatch) return;
 
       const startTime = new Date(timeMatch[1] + "+08:00");
@@ -48,8 +40,8 @@ export async function fetchNowCoderContests(): Promise<ScrapedContest[]> {
     });
 
     return contests;
-  } catch (error) {
-    console.error("NowCoder scraper error:", error);
+  } catch (err) {
+    console.error("NowCoder scraper error:", err);
     return [];
   }
 }

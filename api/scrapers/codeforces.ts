@@ -1,6 +1,6 @@
 import { ScrapedContest } from "./types";
 
-interface CodeforcesContest {
+interface CFContest {
   id: number;
   name: string;
   startTimeSeconds: number;
@@ -10,17 +10,15 @@ interface CodeforcesContest {
 
 export async function fetchCodeforcesContests(): Promise<ScrapedContest[]> {
   try {
-    const response = await fetch(
-      "https://codeforces.com/api/contest.list?gym=false",
-      { headers: { "User-Agent": "CP-Calendar/1.0" } }
-    );
-    const data = await response.json();
-
+    const res = await fetch("https://codeforces.com/api/contest.list?gym=false", {
+      headers: { "User-Agent": "CP-Calendar/1.0" },
+    });
+    const data = await res.json();
     if (data.status !== "OK") return [];
 
     return data.result
-      .filter((c: CodeforcesContest) => c.phase === "BEFORE")
-      .map((c: CodeforcesContest): ScrapedContest => ({
+      .filter((c: CFContest) => c.phase === "BEFORE")
+      .map((c: CFContest): ScrapedContest => ({
         platform: "codeforces",
         contestId: String(c.id),
         name: c.name,
@@ -29,8 +27,8 @@ export async function fetchCodeforcesContests(): Promise<ScrapedContest[]> {
         endTime: new Date((c.startTimeSeconds + c.durationSeconds) * 1000),
         duration: c.durationSeconds,
       }));
-  } catch (error) {
-    console.error("Codeforces scraper error:", error);
+  } catch (err) {
+    console.error("Codeforces scraper error:", err);
     return [];
   }
 }

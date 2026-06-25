@@ -15,7 +15,6 @@ export async function fetchAllContests(): Promise<ScrapedContest[]> {
   ]);
 
   const allContests: ScrapedContest[] = [];
-
   for (const result of results) {
     if (result.status === "fulfilled") {
       allContests.push(...result.value);
@@ -23,7 +22,6 @@ export async function fetchAllContests(): Promise<ScrapedContest[]> {
       console.error("Scraper failed:", result.reason);
     }
   }
-
   return allContests;
 }
 

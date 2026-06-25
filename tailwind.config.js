@@ -5,17 +5,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        midnight: {
-          base: "#0a0e27",
-          deep: "#050714",
-          surface: "#111842",
-          highlight: "#1a2463",
-        },
-        amber: {
-          gold: "#d4a24e",
-          glow: "#f0c96b",
-          dark: "#8b6f2f",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
